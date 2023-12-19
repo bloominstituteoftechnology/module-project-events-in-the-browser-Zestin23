@@ -1,6 +1,9 @@
 // 👉 TASK 1 - Understand the existing code 👈
+
 function moduleProject2() {
+
   // 👇 WORK WORK BELOW THIS LINE 👇
+
   let startTime = new Date().getTime() // Record start time
 
   function getTimeElapsed() { // To be used at end of game to get elapsed time
@@ -9,6 +12,7 @@ function moduleProject2() {
   }
 
   // Setting up the footer content
+
   let footer = document.querySelector('footer')
   let currentYear = new Date().getFullYear()
   footer.textContent = `© BLOOM INSTITUTE OF TECHNOLOGY ${currentYear}`
@@ -22,28 +26,42 @@ function moduleProject2() {
   }
 
   // Helper function to grab all squares
+
   const getAllSquares = () => document.querySelectorAll('.square')
 
   // Populating the grid with rows and squares
+
   for (let n = 0; n < 5; n++) {
+
     // Creating the rows
+
     let row = document.createElement('div')
     document.querySelector('#grid').appendChild(row)
     row.classList.add('row')
+
     // Creating the squares
+
     for (let m = 0; m < 5; m++) {
       let square = document.createElement('div')
       square.classList.add('square')
       row.appendChild(square)
       square.addEventListener('click', () => {
+
         // 👉 TASK 2 - Use a click handler to target a square 👈
+        
+        if (!square.classList.contains("targeted")){
+          document.querySelector(".targeted").classList.remove("targeted")
+          square.classList.add("targeted")
+        }
       })
     }
   }
+
   document.querySelector('.row:nth-child(3)')
     .children[2].classList.add('targeted') // Initial square being targeted
 
   // Helper function to obtain 5 random indices (0-24) to put mosquitoes in
+
   function generateRandomIntegers() {
     let randomInts = []
     while (randomInts.length < 5) {
@@ -54,6 +72,7 @@ function moduleProject2() {
     }
     return randomInts
   }
+
   let allSquares = getAllSquares()
   generateRandomIntegers().forEach(randomInt => { // Puts live mosquitoes in 5 random squares
     let mosquito = document.createElement('img')
@@ -64,12 +83,73 @@ function moduleProject2() {
   })
 
   document.addEventListener('keydown', evt => {
+
     // 👉 TASK 3 - Use the arrow keys to highlight a new square 👈
 
+    // console.log(evt.key)
+
+    let isUp = evt.key === keys.up
+    let isDown = evt.key === keys.down
+    let isLeft = evt.key === keys.left
+    let isRight = evt.key === keys.right
+    let isSpacebar = evt.key === keys.space
+
+    let targeted = document.querySelector(".targeted")
+
+    if (isUp){
+      if (targeted.parentElement.previousElementSibling){
+        let idx = Array.from(targeted.parentElement.children).indexOf(targeted)
+        targeted.classList.remove("targeted")
+        targeted.parentElement.previousElementSibling.children[idx].classList.add("targeted")
+      }
+    } else if (isDown){
+      if (targeted.parentElement.nextElementSibling){
+        let idx = Array.from(targeted.parentElement.children).indexOf(targeted)
+        targeted.classList.remove("targeted")
+        targeted.parentElement.nextElementSibling.children[idx].classList.add("targeted")
+      }   
+    } else if (isLeft){
+      if (targeted.previousElementSibling){
+        targeted.classList.remove("targeted")
+        targeted.previousElementSibling.classList.add("targeted")
+      }  
+    } else if (isRight){
+      if (targeted.nextElementSibling){
+        targeted.classList.remove("targeted")
+        targeted.nextElementSibling.classList.add("targeted")
+      }  
+    }
     // 👉 TASK 4 - Use the space bar to exterminate a mosquito 👈
 
+     else if (isSpacebar){
+              
+      let mosquito = targeted.firstChild
+          
+      if (mosquito && mosquito.dataset.status === "alive"){
+        mosquito.dataset.status = "dead"
+        mosquito.parentElement.style.backgroundColor = "red" 
+      }
+    }
+    
     // 👉 TASK 5 - End the game 👈
+
+    let liveMosquitoes = document.querySelectorAll("[data-status=alive]")
+    if (!liveMosquitoes.length){
+      let elapsed = getTimeElapsed()
+      document.querySelector("p.info").textContent = `Etermination completed in ${elapsed / 1000} seconds!`
+          
+      let restartButton = document.createElement("button")
+      restartButton.textContent = "Restart"
+      restartButton.addEventListener("click", () =>{
+        location.reload()
+      })
+       document.querySelector("h2").insertAdjacentElement("beforeend", restartButton)             
+    }
+
+     
+
   })
+
   // 👆 WORK WORK ABOVE THIS LINE 👆
 }
 
